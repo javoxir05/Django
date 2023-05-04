@@ -16,21 +16,28 @@ class Home(View):
         return render(request, self.template_name, context=self.context)
 
 
-class ProductDetail(View):
-    template_name = 'single.html'
+class Properties(View):
+    template_name = 'properties.html'
     context = {}
 
-    def get(self, request, pk):
-        if not (request.user.is_authenticated and UserProductView.objects.filter(Q(product_id=pk),
-                                                                                 Q(user=request.user)).exists()):
-            user_product_view = UserProductView.objects.create(
-                product_id=pk,
-                user=request.user
-            )
-            user_product_view.save()
-        product = Product.objects.get(pk=pk)
-        self.context['product'] = product
-        return render(request, self.template_name, context=self.context)
+    def get(self, request):
+        return render(request, self.template_name, self.context)
+
+
+class Agents(View):
+    template_name = 'agents.html'
+    context = {}
+
+    def get(self, request):
+        return render(request, self.template_name, self.context)
+
+
+class Blog(View):
+    template_name = 'blog.html'
+    context = {}
+
+    def get(self, request):
+        return render(request, self.template_name, self.context)
 
 
 class About(LoginRequiredMixin, View):
@@ -78,6 +85,7 @@ class Contact(View):
 
         return redirect('/contact')
 
+
 class Login(View):
     template_name = 'login.html'
     context = {}
@@ -85,10 +93,27 @@ class Login(View):
     def get(self, request):
         return render(request, self.template_name, self.context)
 
-class Blog(View):
-    template_name = 'blog.html'
+
+class ProductDetail(View):
+    template_name = 'single.html'
+    context = {}
+
+    def get(self, request, pk):
+        if not (request.user.is_authenticated and UserProductView.objects.filter(Q(product_id=pk),
+                                                                                 Q(user=request.user)).exists()):
+            user_product_view = UserProductView.objects.create(
+                product_id=pk,
+                user=request.user
+            )
+            user_product_view.save()
+        product = Product.objects.get(pk=pk)
+        self.context['product'] = product
+        return render(request, self.template_name, context=self.context)
+
+
+class Search(View):
+    template_name = 'se.html'
     context = {}
 
     def get(self, request):
         return render(request, self.template_name, self.context)
-
