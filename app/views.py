@@ -1,9 +1,19 @@
+from django.contrib import auth
+from django.contrib.auth.decorators import permission_required
 from django.db.models import Q
 from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.utils.timezone import activate
+
+# from .forms import UsersCreationForm, ProductForm
 from .models import *
 from django.views import View
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+# from apps.forms import UsersCreationForm, ProductForm
+# from apps.models import User
+
 
 
 class Home(View):
@@ -85,13 +95,31 @@ class Contact(View):
 
         return redirect('/contact')
 
+def login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
+            auth.login(request, user)
+            return redirect('/')
+    return render(request, 'login.html')
 
-class Login(View):
-    template_name = 'login.html'
-    context = {}
+def register(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        surname = request.POST.get('surname')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = User.objects.create_user(username=username, password=password, first_name=name, last_name=surname)
+        user.save()
+        return redirect('login')
+    else:
+        return render(request, 'register.html')
 
-    def get(self, request):
-        return render(request, self.template_name, self.context)
+def logout(request):
+    auth.logout(request)
+    return redirect('/')
 
 
 class ProductDetail(View):
@@ -110,10 +138,57 @@ class ProductDetail(View):
         self.context['product'] = product
         return render(request, self.template_name, context=self.context)
 
+    def post(self, request, pk):
+        update_or_delete = request.POST.get('update_or_delete', None)
 
-class Search(View):
-    template_name = 'se.html'
-    context = {}
+        if update_or_delete == 'update':
+            address = request.POST.get('address', None)
+            price = request.POST.get('price', None)
+            image1 = request.POST.get('image1', None)
+            image2 = request.POST.get('image2', None)
+            image3 = request.POST.get('image3', None)
+            image4 = request.POST.get('image4', None)
+            image5 = request.POST.get('image5', None)
+            description = request.POST.get('description', None)
+            sale_rent = request.POST.get('sale_rent', None)
 
-    def get(self, request):
-        return render(request, self.template_name, self.context)
+            product = Product.objects.get(pk=pk)
+
+            if address:
+                product.address = address
+            if price:
+                product.price = price
+            if image1:
+                product.image1 = image1
+            if image2:
+                product.image2 = image2
+            if image3:
+                product.image3 = image3
+            if image4:
+                product.image4 = image4
+            if image5:
+                product.image5 = image5
+            if description:
+                product.description = description
+            if sale_rent:
+                product.sale_rent = sale_rent
+            product.save()
+
+            return redirect(f'/product-detail/{pk}')
+        else:
+            Product.objects.get(pk=pk).delete()
+            return redirect('/')
+
+def set_language(request, LANGUAGE_SESSION_KEY=None):
+    if request.method == 'POST':
+        language = request.POST.get('language', None)
+        if language:
+            request.session[LANGUAGE_SESSION_KEY] = language
+            activate(language)
+        return redirect(request.META.get('HTTP_REFERER', reverse('home')))
+
+
+def search(request):
+    query = request.GET.get('serarch')
+    indexting = Product.objects.filter(name_icontains=query)
+    return render(request, 'index.html', {'indexting': indexting})

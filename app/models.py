@@ -1,5 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AbstractUser
+from django.utils.translation import gettext_lazy as _
+
 
 
 class Region(models.Model):
@@ -84,3 +86,56 @@ class Message(models.Model):
 
     def __str__(self):
         return self.subject
+
+# class User(AbstractUser):
+#     class Status(models.TextChoices):
+#         ADMIN = 'admin', 'Admin'
+#         CLIENT = 'client', 'Client'
+#         VIP_CLIENT = 'vip_client', 'Vip client'
+#
+#     status = models.CharField(max_length=50, choices=Status.choices, default=Status.CLIENT)
+#     email = models.EmailField(unique=True)
+#
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(args, kwargs)
+#         self.cart_set = None
+#
+#     @property
+#     def cart_count(self):
+#         cart = self.cart_set.filter(is_active=True).first()
+#         if cart:
+#             return cart.cartitem_set.count()
+#         return 0
+#
+# class Tag(models.Model):
+#     name = models.CharField(max_length=255)
+#
+#     def __str__(self):
+#         return self.name
+#
+#
+# class BaseModel:
+#     pass
+#
+#
+# class Product(BaseModel):
+#     title = models.CharField(max_length=255)
+#     price = models.IntegerField()
+#     short_description = models.TextField()
+#     description = models.TextField(blank=True, null=True)
+#     discount = models.IntegerField(null=True, blank=True)
+#     quantity = models.IntegerField()
+#     is_premium = models.BooleanField(default=False)
+#     shopping_cost = models.SmallIntegerField(default=0)
+#     tags = models.ForeignKey('app.Tag', models.CASCADE, blank=True, default=1)
+#     category = models.ForeignKey('app.Category', models.CASCADE)
+#     specification = models.JSONField(default=dict, blank=True)
+#     author = models.ForeignKey('app.User', models.CASCADE)
+#
+#     def __str__(self):
+#         return self.title
+#
+#     @property
+#     def discount_price(self):
+#         return self.price - self.price * self.discount // 100
+

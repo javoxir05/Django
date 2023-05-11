@@ -1,4 +1,5 @@
 import os
+from importlib.resources import _
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
 
     #custom
     'app',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -79,9 +81,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LANGUAGE_CODE = 'ru-RU'
+
+LANGUAGES = (
+    ('ru-RU', _('Russian')),
+    ('en-us', _('English'))
+)
 
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -94,5 +102,24 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MODELTRANSLATION_LANGUAGES = ('ru', 'en')
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'ru'
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/accounts/login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'zaripbaevjavoxir2@gmail.com'
+EMAIL_HOST_PASSWORD = 'nhdgqkcpetiaobwa'
